@@ -1,226 +1,212 @@
 package options
 
-import (
-	"sync"
-	"time"
+// // Defines flag for floractl.
+// const (
+// 	FlagConfig        = "config"
+// 	FlagBearerToken   = "user.token"
+// 	FlagUsername      = "user.username"
+// 	FlagPassword      = "user.password"
+// 	FlagSecretID      = "user.secret-id"
+// 	FlagSecretKey     = "user.secret-key"
+// 	FlagCertFile      = "user.client-certificate"
+// 	FlagKeyFile       = "user.client-key"
+// 	FlagTLSServerName = "server.tls-server-name"
+// 	FlagInsecure      = "server.insecure-skip-tls-verify"
+// 	FlagCAFile        = "server.certificate-authority"
+// 	FlagAPIServer     = "server.address"
+// 	FlagTimeout       = "server.timeout"
+// 	FlagMaxRetries    = "server.max-retries"
+// 	FlagRetryInterval = "server.retry-interval"
+// )
 
-	"github.com/AlekSi/pointer"
-	"github.com/spf13/viper"
-)
+// // Config holds the common attributes that can be passed to a IAM client on
+// // initialization.
+// type Config struct {
+// 	Host    string
+// 	APIPath string
+// 	ContentConfig
 
-// Defines flag for floractl.
-const (
-	FlagConfig        = "config"
-	FlagBearerToken   = "user.token"
-	FlagUsername      = "user.username"
-	FlagPassword      = "user.password"
-	FlagSecretID      = "user.secret-id"
-	FlagSecretKey     = "user.secret-key"
-	FlagCertFile      = "user.client-certificate"
-	FlagKeyFile       = "user.client-key"
-	FlagTLSServerName = "server.tls-server-name"
-	FlagInsecure      = "server.insecure-skip-tls-verify"
-	FlagCAFile        = "server.certificate-authority"
-	FlagAPIServer     = "server.address"
-	FlagTimeout       = "server.timeout"
-	FlagMaxRetries    = "server.max-retries"
-	FlagRetryInterval = "server.retry-interval"
-)
+// 	// Server requires Basic authentication
+// 	Username string
+// 	Password string
 
-// Config holds the common attributes that can be passed to a IAM client on
-// initialization.
-type Config struct {
-	Host    string
-	APIPath string
-	ContentConfig
+// 	SecretID  string
+// 	SecretKey string
 
-	// Server requires Basic authentication
-	Username string
-	Password string
+// 	// Server requires Bearer authentication. This client will not attempt to use
+// 	// refresh tokens for an OAuth2 flow.
+// 	BearerToken string
 
-	SecretID  string
-	SecretKey string
+// 	// Path to a file containing a BearerToken.
+// 	// If set, the contents are periodically read.
+// 	// The last successfully read value takes precedence over BearerToken.
+// 	BearerTokenFile string
 
-	// Server requires Bearer authentication. This client will not attempt to use
-	// refresh tokens for an OAuth2 flow.
-	BearerToken string
+// 	// TLSClientConfig contains settings to enable transport layer security
+// 	TLSClientConfig
 
-	// Path to a file containing a BearerToken.
-	// If set, the contents are periodically read.
-	// The last successfully read value takes precedence over BearerToken.
-	BearerTokenFile string
+// 	// UserAgent is an optional field that specifies the caller of this request.
+// 	UserAgent string
+// 	// The maximum length of time to wait before giving up on a server request. A value of zero means no timeout.
+// 	Timeout       time.Duration
+// 	MaxRetries    int
+// 	RetryInterval time.Duration
+// }
 
-	// TLSClientConfig contains settings to enable transport layer security
-	TLSClientConfig
+// // ContentConfig defines config for content.
+// type ContentConfig struct {
+// 	ServiceName        string
+// 	AcceptContentTypes string
+// 	ContentType        string
+// }
 
-	// UserAgent is an optional field that specifies the caller of this request.
-	UserAgent string
-	// The maximum length of time to wait before giving up on a server request. A value of zero means no timeout.
-	Timeout       time.Duration
-	MaxRetries    int
-	RetryInterval time.Duration
-}
+// // TLSClientConfig contains settings to enable transport layer security.
+// type TLSClientConfig struct {
+// 	// Server should be accessed without verifying the TLS certificate. For testing only.
+// 	Insecure bool
+// 	// ServerName is passed to the server for SNI and is used in the client to check server
+// 	// ceritificates against. If ServerName is empty, the hostname used to contact the
+// 	// server is used.
+// 	ServerName string
 
-// ContentConfig defines config for content.
-type ContentConfig struct {
-	ServiceName        string
-	AcceptContentTypes string
-	ContentType        string
-}
+// 	// Server requires TLS client certificate authentication
+// 	CertFile string
+// 	// Server requires TLS client certificate authentication
+// 	KeyFile string
+// 	// Trusted root certificates for server
+// 	CAFile string
 
-// TLSClientConfig contains settings to enable transport layer security.
-type TLSClientConfig struct {
-	// Server should be accessed without verifying the TLS certificate. For testing only.
-	Insecure bool
-	// ServerName is passed to the server for SNI and is used in the client to check server
-	// ceritificates against. If ServerName is empty, the hostname used to contact the
-	// server is used.
-	ServerName string
+// 	// CertData holds PEM-encoded bytes (typically read from a client certificate file).
+// 	// CertData takes precedence over CertFile
+// 	CertData []byte
+// 	// KeyData holds PEM-encoded bytes (typically read from a client certificate key file).
+// 	// KeyData takes precedence over KeyFile
+// 	KeyData []byte
+// 	// CAData holds PEM-encoded bytes (typically read from a root certificates bundle).
+// 	// CAData takes precedence over CAFile
+// 	CAData []byte
 
-	// Server requires TLS client certificate authentication
-	CertFile string
-	// Server requires TLS client certificate authentication
-	KeyFile string
-	// Trusted root certificates for server
-	CAFile string
+// 	// NextProtos is a list of supported application level protocols, in order of preference.
+// 	// Used to populate tls.Config.NextProtos.
+// 	// To indicate to the server http/1.1 is preferred over http/2, set to ["http/1.1", "h2"] (though the server is free
+// 	// to ignore that preference).
+// 	// To use only http/1.1, set to ["http/1.1"].
+// 	NextProtos []string
+// }
 
-	// CertData holds PEM-encoded bytes (typically read from a client certificate file).
-	// CertData takes precedence over CertFile
-	CertData []byte
-	// KeyData holds PEM-encoded bytes (typically read from a client certificate key file).
-	// KeyData takes precedence over KeyFile
-	KeyData []byte
-	// CAData holds PEM-encoded bytes (typically read from a root certificates bundle).
-	// CAData takes precedence over CAFile
-	CAData []byte
+// type RESTClientGetter interface {
+// 	ToRESTConfig() (*Config, error)
+// 	ToRawConfigLoader() ClientConfiger
+// }
 
-	// NextProtos is a list of supported application level protocols, in order of preference.
-	// Used to populate tls.Config.NextProtos.
-	// To indicate to the server http/1.1 is preferred over http/2, set to ["http/1.1", "h2"] (though the server is free
-	// to ignore that preference).
-	// To use only http/1.1, set to ["http/1.1"].
-	NextProtos []string
-}
+// var _ RESTClientGetter = &ConfigFlags{}
 
-type RESTClientGetter interface {
-	ToRESTConfig() (*Config, error)
-	ToRawConfigLoader() ClientConfiger
-}
+// // ClientConfig is used to make it easy to get an api server client.
+// type ClientConfiger interface {
+// 	// ClientConfig returns a complete client config
+// 	ClientConfig() (*Config, error)
+// }
 
-var _ RESTClientGetter = &ConfigFlags{}
+// // ConfigFlags composes the set of values necessary
+// // for obtaining a REST client config.
+// type ConfigFlags struct {
+// 	Config *string
 
-// ClientConfig is used to make it easy to get an api server client.
-type ClientConfiger interface {
-	// ClientConfig returns a complete client config
-	ClientConfig() (*Config, error)
-}
+// 	BearerToken *string
+// 	Username    *string
+// 	Password    *string
+// 	SecretID    *string
+// 	SecretKey   *string
 
-// ConfigFlags composes the set of values necessary
-// for obtaining a REST client config.
-type ConfigFlags struct {
-	Config *string
+// 	Insecure      *bool
+// 	TLSServerName *string
+// 	CertFile      *string
+// 	KeyFile       *string
+// 	CAFile        *string
 
-	BearerToken *string
-	Username    *string
-	Password    *string
-	SecretID    *string
-	SecretKey   *string
+// 	APIServer     *string
+// 	Timeout       *time.Duration
+// 	MaxRetries    *int
+// 	RetryInterval *time.Duration
 
-	Insecure      *bool
-	TLSServerName *string
-	CertFile      *string
-	KeyFile       *string
-	CAFile        *string
+// 	clientConfig ClientConfiger
+// 	lock         sync.Mutex
+// 	// If set to true, will use persistent client config and
+// 	// propagate the config to the places that need it, rather than
+// 	// loading the config multiple times
+// 	usePersistentConfig bool
+// }
 
-	APIServer     *string
-	Timeout       *time.Duration
-	MaxRetries    *int
-	RetryInterval *time.Duration
+// func (f *ConfigFlags) ToRESTConfig() (*Config, error) {
+// 	return f.ToRawConfigLoader().ClientConfig()
+// }
 
-	clientConfig ClientConfiger
-	lock         sync.Mutex
-	// If set to true, will use persistent client config and
-	// propagate the config to the places that need it, rather than
-	// loading the config multiple times
-	usePersistentConfig bool
-}
+// func (f *ConfigFlags) ToRawConfigLoader() ClientConfiger {
+// 	if f.usePersistentConfig {
+// 		return f.toRawPersistentConfigLoader()
+// 	}
 
-func (f *ConfigFlags) ToRESTConfig() (*Config, error) {
-	return f.ToRawConfigLoader().ClientConfig()
-}
+// 	return f.toRawConfigLoader()
+// }
 
-func (f *ConfigFlags) ToRawConfigLoader() ClientConfiger {
-	if f.usePersistentConfig {
-		return f.toRawPersistentConfigLoader()
-	}
+// func (f *ConfigFlags) toRawConfigLoader() ClientConfiger {
+// 	config := NewConfig()
+// 	if err := viper.Unmarshal(&config); err != nil {
+// 		panic(err)
+// 	}
 
-	return f.toRawConfigLoader()
-}
+// 	return NewClientConfigFromConfig(config)
+// }
 
-func (f *ConfigFlags) toRawConfigLoader() ClientConfiger {
-	config := NewConfig()
-	if err := viper.Unmarshal(&config); err != nil {
-		panic(err)
-	}
+// func (f *ConfigFlags) toRawPersistentConfigLoader() ClientConfiger {
+// 	f.lock.Lock()
+// 	defer f.lock.Unlock()
 
-	return NewClientConfigFromConfig(config)
-}
+// 	if f.clientConfig == nil {
+// 		f.clientConfig = f.toRawConfigLoader()
+// 	}
 
-func (f *ConfigFlags) toRawPersistentConfigLoader() ClientConfiger {
-	f.lock.Lock()
-	defer f.lock.Unlock()
+// 	return f.clientConfig
+// }
 
-	if f.clientConfig == nil {
-		f.clientConfig = f.toRawConfigLoader()
-	}
+// func (f *ConfigFlags) WithDeprecatedPasswordFlag() *ConfigFlags {
+// 	f.Username = pointer.ToString("")
+// 	f.Password = pointer.ToString("")
 
-	return f.clientConfig
-}
+// 	return f
+// }
 
-func (f *ConfigFlags) WithDeprecatedPasswordFlag() *ConfigFlags {
-	f.Username = pointer.ToString("")
-	f.Password = pointer.ToString("")
+// func (f *ConfigFlags) WithDeprecatedSecretFlag() *ConfigFlags {
+// 	f.SecretID = pointer.ToString("")
+// 	f.SecretKey = pointer.ToString("")
 
-	return f
-}
+// 	return f
 
-func (f *ConfigFlags) WithDeprecatedSecretFlag() *ConfigFlags {
-	f.SecretID = pointer.ToString("")
-	f.SecretKey = pointer.ToString("")
+// }
 
-	return f
+// func NewConfigFlags(usePersistentConfig bool) *ConfigFlags {
+// 	return &ConfigFlags{
+// 		Config: pointer.ToString(""),
 
-}
+// 		BearerToken:   pointer.ToString(""),
+// 		Insecure:      pointer.ToBool(false),
+// 		TLSServerName: pointer.ToString(""),
+// 		CertFile:      pointer.ToString(""),
+// 		KeyFile:       pointer.ToString(""),
+// 		CAFile:        pointer.ToString(""),
 
-func (f *ConfigFlags)AddFlags(flags *pflag.FlagSet) {
-	if f.Config != nil {
-		
-	}
-}
+// 		APIServer:           pointer.ToString(""),
+// 		Timeout:             pointer.ToDuration(30 * time.Second),
+// 		MaxRetries:          pointer.ToInt(0),
+// 		RetryInterval:       pointer.ToDuration(1 * time.Second),
+// 		usePersistentConfig: usePersistentConfig,
+// 	}
+// }
 
-func NewConfigFlags(usePersistentConfig bool) *ConfigFlags {
-	return &ConfigFlags{
-		Config: pointer.ToString(""),
+// func NewConfig() *Config {
+// 	return &Config{}
+// }
 
-		BearerToken:   pointer.ToString(""),
-		Insecure:      pointer.ToBool(false),
-		TLSServerName: pointer.ToString(""),
-		CertFile:      pointer.ToString(""),
-		KeyFile:       pointer.ToString(""),
-		CAFile:        pointer.ToString(""),
-
-		APIServer:           pointer.ToString(""),
-		Timeout:             pointer.ToDuration(30 * time.Second),
-		MaxRetries:          pointer.ToInt(0),
-		RetryInterval:       pointer.ToDuration(1 * time.Second),
-		usePersistentConfig: usePersistentConfig,
-	}
-}
-
-func NewConfig() *Config {
-	return &Config{}
-}
-
-func NewClientConfigFromConfig(config *Config) ClientConfiger {
-	return &ClientConfig{config}
-}
+// func NewClientConfigFromConfig(config *Config) ClientConfiger {
+// 	return &clientcmd.ClientConfig{}
+// }
