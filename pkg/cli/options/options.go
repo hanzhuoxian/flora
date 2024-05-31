@@ -21,6 +21,7 @@ func NewTestIOStreams() (IOStreams, *bytes.Buffer, *bytes.Buffer, *bytes.Buffer)
 	in := &bytes.Buffer{}
 	out := &bytes.Buffer{}
 	errOut := &bytes.Buffer{}
+
 	return IOStreams{
 		In:     in,
 		Out:    out,
@@ -30,6 +31,7 @@ func NewTestIOStreams() (IOStreams, *bytes.Buffer, *bytes.Buffer, *bytes.Buffer)
 
 func NewTestIOStreamsDiscard() IOStreams {
 	in := &bytes.Buffer{}
+
 	return IOStreams{
 		In:     in,
 		Out:    io.Discard,

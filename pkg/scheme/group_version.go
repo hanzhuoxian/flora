@@ -52,6 +52,7 @@ func ParseGroupKind(gk string) GroupKind {
 	if i == -1 {
 		return GroupKind{Kind: gk}
 	}
+
 	return GroupKind{Kind: gk[:i], Group: gk[i+1:]}
 }
 
@@ -65,6 +66,7 @@ func ParseKindArg(arg string) (*GroupVersionKind, GroupKind) {
 			Kind:    s[0],
 		}
 	}
+
 	return &gvk, ParseGroupKind(arg)
 }
 
@@ -84,6 +86,7 @@ func (gv GroupVersion) String() string {
 	if len(gv.Group) > 0 {
 		return gv.Group + "/" + gv.Version
 	}
+
 	return gv.Version
 }
 
@@ -103,13 +106,14 @@ func ParseGroupVersion(gv string) (GroupVersion, error) {
 		return GroupVersion{Group: "", Version: gv}, nil
 	case 1:
 		i := strings.Index(gv, "/")
+
 		return GroupVersion{Group: gv[:i], Version: gv[i+1:]}, nil
 	default:
 		return GroupVersion{}, fmt.Errorf("unexpected GroupVersion string: %v", gv)
 	}
 }
 
-// KindForGroupVersionKinds identifies the preferred GroupVersionKind out of a list. It returns ok false
+// KindForGroupVersionKinds identifies the preferred GroupVersionKind out of a list. It returns ok false.
 func (gv GroupVersion) KindForGroupVersionKinds(kinds []GroupVersionKind) (target GroupVersionKind, ok bool) {
 	for _, kind := range kinds {
 		if kind.Group == gv.Group && kind.Version == gv.Version {
@@ -119,9 +123,9 @@ func (gv GroupVersion) KindForGroupVersionKinds(kinds []GroupVersionKind) (targe
 	for _, kind := range kinds {
 		if kind.Group == gv.Group {
 			return kind, true
-
 		}
 	}
+
 	return GroupVersionKind{}, false
 }
 
@@ -158,6 +162,7 @@ func (gr GroupResource) String() string {
 	if len(gr.Group) == 0 {
 		return gr.Resource
 	}
+
 	return gr.Resource + "." + gr.Group
 }
 
@@ -173,8 +178,8 @@ func (gr GroupResource) WithVersion(version string) GroupVersionResource {
 func ParseGroupResource(gr string) GroupResource {
 	if i := strings.Index(gr, "."); i >= 0 {
 		return GroupResource{Group: gr[i+1:], Resource: gr[:i]}
-
 	}
+
 	return GroupResource{Resource: gr}
 }
 

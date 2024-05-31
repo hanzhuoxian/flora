@@ -438,9 +438,7 @@ linters-settings:
           - "!**/*_a _file.go"
         allow:
           - $gostd
-          - github.com/OpenPeeDeeP
-          - github.com/spf13
-          - github.com/hanzhuoxian
+          - github.com
         deny:
           - pkg: "github.com/sirupsen/logrus"
             desc: not allowed
